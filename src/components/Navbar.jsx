@@ -35,10 +35,10 @@ export default function Navbar() {
           to="/"
           className="text-2xl font-extrabold tracking-wide text-[#EBD6FB]"
         >
-          EramAcademy
+          Eram Academy
         </Link>
 
-        {/* Desktop Menu (UNCHANGED) */}
+        {/* Desktop Menu */}
         <ul className="hidden md:flex items-center gap-8 font-medium text-gray-300">
           {menuItems.map((item) => (
             <NavLink
@@ -55,12 +55,19 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* Desktop CTA */}
-        <Link to="/contact">
-          <button className="hidden md:block bg-[#EBD6FB] text-black px-6 py-2 rounded-full font-semibold hover:bg-[#e0c3f7] transition">
-            Enroll Now
-          </button>
-        </Link>
+        {/* Desktop CTA + Login */}
+        <div className="hidden md:flex items-center gap-4">
+          <Link to="/contact">
+            <button className="bg-[#EBD6FB] text-black px-6 py-2 rounded-full font-semibold hover:bg-[#e0c3f7] transition">
+              Enroll Now
+            </button>
+          </Link>
+          <Link to="/login">
+            <button className="bg-transparent border border-[#EBD6FB] text-[#EBD6FB] px-6 py-2 rounded-full font-semibold hover:bg-[#EBD6FB] hover:text-black transition">
+              Login
+            </button>
+          </Link>
+        </div>
 
         {/* Hamburger Button (Mobile Only) */}
         <button
@@ -111,6 +118,13 @@ export default function Navbar() {
           <Link to="/contact" onClick={() => setIsOpen(false)}>
             <button className="w-full mt-3 bg-[#EBD6FB] text-black px-6 py-2 rounded-full font-semibold">
               Enroll Now
+            </button>
+          </Link>
+
+          {/* Mobile Login */}
+          <Link to="/login" onClick={() => setIsOpen(false)}>
+            <button className="w-full mt-2 border border-[#EBD6FB] text-[#EBD6FB] px-6 py-2 rounded-full font-semibold hover:bg-[#EBD6FB] hover:text-black transition">
+              Login
             </button>
           </Link>
         </div>
