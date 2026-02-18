@@ -89,7 +89,7 @@ export default function CoursesSection() {
         style={{ animationDelay: "600ms" }}
       >
         <button className="bg-[#EBD6FB] hover:bg-[#e0c3f7] text-black px-8 md:px-10 py-3 md:py-4 rounded-full font-semibold text-base md:text-lg shadow-lg transition duration-300 hover:scale-110">
-          ENROLL TODAY!
+          <Link to="/contact">ENROLL TODAY!</Link>
         </button>
       </div>
 
