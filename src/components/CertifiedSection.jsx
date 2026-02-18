@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function CertifiedSection() {
   return (
     <section className="bg-[#f3f3f3] py-16 md:py-28">
@@ -16,7 +18,7 @@ export default function CertifiedSection() {
             <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent translate-x-[-100%] hover:translate-x-[100%] transition-transform duration-700"></span>
 
             <span className="relative z-10">
-              ENROLL TODAY!
+              <Link to="/contact">ENROLL TODAY!</Link>
             </span>
           </button>
         </div>
