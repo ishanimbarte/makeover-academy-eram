@@ -4,6 +4,8 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 
 import Navbar from "./components/Navbar";
+import LoginPage from "./components/Login";
+import SignupPage from "./components/Signup";
 import Hero from "./components/Hero";
 import Stats from "./components/Stats";
 import AboutSection from "./components/AboutSection";
@@ -74,6 +76,8 @@ function App() {
         <Route path="/bridal-course" element={<BridalMakeupCourse />} />
         <Route path="/course" element={<CourseModal />} />
         <Route path="/courseform" element={<CourseForm />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
         
       </Routes>
 
