@@ -88,7 +88,7 @@ export default function SignupPage() {
               placeholder="Re-enter your password"
             />
           </div>
-
+{/* jni */}
           {/* Submit */}
           <button
             type="submit"
