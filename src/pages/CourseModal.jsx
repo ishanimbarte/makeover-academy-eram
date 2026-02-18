@@ -1,6 +1,11 @@
 import React from "react";
+// import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+
 
 export default function CourseModal({ isOpen, onClose, course }) {
+  // const navigate = useNavigate();
+
   if (!isOpen) return null;
 
   return (
@@ -52,6 +57,20 @@ export default function CourseModal({ isOpen, onClose, course }) {
             </ul>
           </div>
         )}
+
+                {/* Enroll Button */}
+        <div className="mt-6">
+  <Link
+    to="/courseform"
+    state={{ course }}
+    className="w-full bg-[#EBD6FB] text-black font-semibold py-3 rounded-lg hover:bg-[#d8b9f8] transition duration-300 text-center block"
+  >
+    Enroll Course Now
+  </Link>
+</div>
+
+
+
       </div>
     </div>
   );

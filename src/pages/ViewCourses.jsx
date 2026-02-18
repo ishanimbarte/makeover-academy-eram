@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import CourseModal from "./CourseModal";
+import { useNavigate } from "react-router-dom";
 
 // Example images
 import elite from "../assets/elite.jpg";
@@ -208,13 +209,11 @@ export default function ViewCourses() {
       </section>
 
       {/* Course Modal */}
-      {selectedCourse && (
-        <CourseModal
-          isOpen={modalOpen}
-          onClose={closeModal}
-          course={selectedCourse}
-        />
-      )}
+      <CourseModal
+  isOpen={!!selectedCourse}
+  onClose={() => setSelectedCourse(null)}
+  course={selectedCourse}
+/>
     </div>
   );
 }

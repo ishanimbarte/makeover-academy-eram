@@ -22,6 +22,7 @@ import EliteMakeupCourse from "./pages/EliteMakeupCourse";
 import MasterMakeupCourse from "./pages/MasterMakeupCourse";
 import BridalMakeupCourse from "./pages/BridalMakeupCourse";
 import CourseModal from "./pages/CourseModal";
+import CourseForm from "./pages/CourseForm";
 
 
 /* 🔥 Scroll To Top Component */
@@ -72,6 +73,8 @@ function App() {
         <Route path="/master-course" element={<MasterMakeupCourse />} />
         <Route path="/bridal-course" element={<BridalMakeupCourse />} />
         <Route path="/course" element={<CourseModal />} />
+        <Route path="/courseform" element={<CourseForm />} />
+        
       </Routes>
 
       <Footer />
