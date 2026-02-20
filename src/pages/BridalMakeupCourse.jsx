@@ -1,5 +1,6 @@
 // src/pages/BridalMakeupCourse.jsx
 import React from "react";
+import { Link } from "react-router-dom";
 import bridal1 from "../assets/bridal1.jpg"; // Replace with your uploaded images
 import bridal2 from "../assets/bridal2.jpg";
 import bridal3 from "../assets/bridal3.jpg";
@@ -71,12 +72,12 @@ export default function BridalMakeupCourse() {
 
       {/* Call to Action */}
       <div className="mb-20 text-center">
-        <a
-          href="/free-demo"
+        <Link
+          to="/free-demo"
           className="bg-[#EBD6FB] text-black font-semibold px-8 py-4 rounded-full hover:bg-[#e0c3f7] hover:scale-105 transition transform"
         >
           Register for a Free Demo Class
-        </a>
+        </Link>
       </div>
     </div>
   );

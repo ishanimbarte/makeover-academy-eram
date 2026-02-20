@@ -1,5 +1,6 @@
 // src/pages/MasterMakeupCourse.jsx
 import React from "react";
+import { Link } from "react-router-dom";
 import onlineClassImg from "../assets/onlineClass.jpg"; // Replace with actual image
 import bridalImg from "../assets/bridalMaster.jpg";     // Replace with actual image
 import advancedImg from "../assets/advancedTech.jpg";   // Replace with actual image
@@ -71,12 +72,12 @@ export default function MasterMakeupCourse() {
 
       {/* Call to Action */}
       <div className="mb-20 text-center">
-        <a
-          href="/free-demo"
+        <Link
+          to="/free-demo"
           className="bg-[#EBD6FB] text-black font-semibold px-8 py-4 rounded-full hover:bg-[#e0c3f7] hover:scale-105 transition transform"
         >
           Register for a Free Demo Class
-        </a>
+        </Link>
       </div>
 
     </div>
