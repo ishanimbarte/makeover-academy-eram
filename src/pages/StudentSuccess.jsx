@@ -1,5 +1,6 @@
 // src/pages/StudentSuccess.jsx
 import React from "react";
+import { Link } from "react-router-dom";
 
 export default function StudentSuccess() {
   const achievements = [
@@ -72,12 +73,12 @@ export default function StudentSuccess() {
 
       {/* Call to Action */}
       <div className="mb-20">
-        <a
-          href="/free-demo"
+        <Link
+          to="/free-demo"
           className="bg-[#EBD6FB] text-black font-semibold px-8 py-4 rounded-full hover:bg-[#e0c3f7] hover:scale-105 transition transform"
         >
           Register for a Free Demo Class
-        </a>
+        </Link>
       </div>
     </div>
   );
