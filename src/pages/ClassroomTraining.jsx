@@ -87,6 +87,7 @@ export default function ClassroomTraining() {
         ))}
       </div>
 
+{/* this */}
       {/* Call to Action */}
       <div className="mb-20">
         <a
