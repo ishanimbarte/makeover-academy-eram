@@ -1,5 +1,6 @@
 // src/pages/ClassroomTraining.jsx
 import React from "react";
+import { Link } from "react-router-dom";
 import basicMakeup from "../assets/basicMakeup.jpg";
 import bridalMakeup from "../assets/bridalMakeup.jpg";
 import skincare from "../assets/skincare.jpg";
@@ -90,12 +91,12 @@ export default function ClassroomTraining() {
 {/* this */}
       {/* Call to Action */}
       <div className="mb-20">
-        <a
-          href="/free-demo"
+        <Link
+          to="/free-demo"
           className="bg-[#EBD6FB] text-black font-semibold px-8 py-4 rounded-full hover:bg-[#e0c3f7] hover:scale-105 transition transform"
         >
           Register for a Free Demo Class
-        </a>
+        </Link>
       </div>
     </div>
   );
