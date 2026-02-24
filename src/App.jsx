@@ -25,6 +25,7 @@ import MasterMakeupCourse from "./pages/MasterMakeupCourse";
 import BridalMakeupCourse from "./pages/BridalMakeupCourse";
 import CourseModal from "./pages/CourseModal";
 import CourseForm from "./pages/CourseForm";
+import Cart from "./pages/Cart";
 
 
 /* 🔥 Scroll To Top Component */
@@ -78,7 +79,7 @@ function App() {
         <Route path="/courseform" element={<CourseForm />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
-        
+        <Route path="/cart" element={<Cart />} />
       </Routes>
 
       <Footer />

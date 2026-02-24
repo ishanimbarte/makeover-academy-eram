@@ -1,11 +1,29 @@
 import React from "react";
 // import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
 
 export default function CourseModal({ isOpen, onClose, course }) {
+  const navigate = useNavigate();
+
   // const navigate = useNavigate();
 
+  const handleEnroll = () => {
+  const existingCart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  // ✅ CHECK IF COURSE ALREADY EXISTS
+  const exists = existingCart.find(
+    (item) => item.title === course.title
+  );
+
+  if (!exists) {
+    existingCart.push(course);
+    localStorage.setItem("cart", JSON.stringify(existingCart));
+    alert("Course added to cart ✅");
+  } else {
+    alert("Course already added in cart ⚠️");
+  }
+};
   if (!isOpen) return null;
 
   return (
@@ -60,13 +78,15 @@ export default function CourseModal({ isOpen, onClose, course }) {
 
                 {/* Enroll Button */}
         <div className="mt-6">
-  <Link
-    to="/courseform"
-    state={{ course }}
-    className="w-full bg-[#EBD6FB] text-black font-semibold py-3 rounded-lg hover:bg-[#d8b9f8] transition duration-300 text-center block"
-  >
-    Enroll Course Now
-  </Link>
+  <button
+  onClick={() => {
+    handleEnroll();
+    navigate("/cart"); // optional redirect
+  }}
+  className="w-full bg-[#EBD6FB] text-black font-semibold py-3 rounded-lg hover:bg-[#d8b9f8] transition duration-300"
+>
+  Enroll Course Now
+</button>
 </div>
 
 
