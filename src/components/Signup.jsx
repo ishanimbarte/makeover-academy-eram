@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { signupUser } from "../api/api"; // ✅ import API
 
 export default function SignupPage() {
   const [name, setName] = useState("");
@@ -7,15 +8,29 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
-    // Here you can add your signup logic, e.g., API call
-    console.log("Name:", name, "Email:", email, "Password:", password);
-  };
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const response = await fetch("http://localhost:8080/auth/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        fullName: name,
+        email: email,
+        password: password,
+      }),
+    });
+
+    const data = await response.json();
+    console.log(data);
+
+  } catch (err) {
+    console.error(err);
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black">
@@ -25,80 +40,55 @@ export default function SignupPage() {
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Name */}
           <div>
-            <label className="block mb-1 font-semibold" htmlFor="name">
-              Full Name
-            </label>
+            <label className="block mb-1 font-semibold">Full Name</label>
             <input
               type="text"
-              id="name"
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-[#EBD6FB] outline-none transition"
-              placeholder="Your full name"
+              className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700"
             />
           </div>
 
-          {/* Email */}
           <div>
-            <label className="block mb-1 font-semibold" htmlFor="email">
-              Email
-            </label>
+            <label className="block mb-1 font-semibold">Email</label>
             <input
               type="email"
-              id="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-[#EBD6FB] outline-none transition"
-              placeholder="you@example.com"
+              className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700"
             />
           </div>
 
-          {/* Password */}
           <div>
-            <label className="block mb-1 font-semibold" htmlFor="password">
-              Password
-            </label>
+            <label className="block mb-1 font-semibold">Password</label>
             <input
               type="password"
-              id="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-[#EBD6FB] outline-none transition"
-              placeholder="Enter your password"
+              className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700"
             />
           </div>
 
-          {/* Confirm Password */}
           <div>
-            <label className="block mb-1 font-semibold" htmlFor="confirmPassword">
-              Confirm Password
-            </label>
+            <label className="block mb-1 font-semibold">Confirm Password</label>
             <input
               type="password"
-              id="confirmPassword"
               required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-[#EBD6FB] outline-none transition mb-6"
-              placeholder="Re-enter your password"
+              className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700"
             />
           </div>
-{/* jni */}
-          {/* Submit */}
-          <button
-            type="submit"
-            className="w-full bg-[#EBD6FB] text-black py-2 rounded-full font-semibold hover:bg-[#e0c3f7] transition mt-2"
-          >
+
+          <button className="w-full bg-[#EBD6FB] text-black py-2 rounded-full font-semibold">
             Sign Up
           </button>
         </form>
 
-        {/* Login Link */}
         <p className="text-center text-gray-400 mt-4">
           Already have an account?{" "}
           <Link to="/login" className="text-[#EBD6FB] hover:underline">

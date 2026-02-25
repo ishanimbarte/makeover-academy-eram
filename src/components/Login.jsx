@@ -1,20 +1,34 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { loginUser } from "../api/api"; // ✅ import API
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate(); // hook to programmatically navigate
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Placeholder login logic (replace with real auth API)
-    if (email === "test@example.com" && password === "password") {
-      // Login successful, redirect to home page
-      navigate("/"); // Redirect to Home Page
-    } else {
-      alert("Invalid email or password");
+    try {
+      const res = await loginUser({
+        email: email,
+        password: password,
+      });
+
+      console.log(res.data);
+
+      // Save token
+      localStorage.setItem("token", res.data.token);
+
+      alert("Login Successful ✅");
+
+      // Redirect to home/dashboard
+      navigate("/");
+
+    } catch (error) {
+      console.error(error.response?.data || error.message);
+      alert("Invalid email or password ❌");
     }
   };
 
@@ -27,39 +41,28 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block mb-1 font-semibold" htmlFor="email">
-              Email
-            </label>
+            <label className="block mb-1 font-semibold">Email</label>
             <input
               type="email"
-              id="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-[#EBD6FB] outline-none transition"
-              placeholder="you@example.com"
+              className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700"
             />
           </div>
 
           <div>
-            <label className="block mb-1 font-semibold" htmlFor="password">
-              Password
-            </label>
+            <label className="block mb-1 font-semibold">Password</label>
             <input
               type="password"
-              id="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-[#EBD6FB] outline-none transition mb-6"
-              placeholder="Enter your password"
+              className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700"
             />
           </div>
 
-          <button
-            type="submit"
-            className="w-full bg-[#EBD6FB] text-black py-2 rounded-full font-semibold hover:bg-[#e0c3f7] transition mt-2"
-          >
+          <button className="w-full bg-[#EBD6FB] text-black py-2 rounded-full font-semibold">
             Login
           </button>
         </form>
