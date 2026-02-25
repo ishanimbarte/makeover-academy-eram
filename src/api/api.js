@@ -18,14 +18,11 @@ API.interceptors.request.use((req) => {
 export const signupUser = (data) => API.post("/auth/signup", data);
 export const loginUser = (data) => API.post("/auth/login", data);
 
-// ================= CONTACT =================
+// Contact API
+export const sendContactMessage = (data) => {
+  return axios.post(`${BASE_URL}/contact`, data);
+};
 
-export const sendContactMessage = (data) =>
-  API.post("/contact", data);
 
-// ================= FREE DEMO =================
-
-export const registerDemo = (data) =>
-  API.post("/demo/register", data);
 
 export default API;
