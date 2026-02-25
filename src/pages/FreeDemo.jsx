@@ -1,5 +1,3 @@
-// src/pages/FreeDemo.jsx
-
 import React, { useState } from "react";
 import { registerDemo } from "../api/api";
 
