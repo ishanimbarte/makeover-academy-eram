@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { signupUser } from "../api/api"; // ✅ import API
+//import { signupUser } from "../api/api"; // ✅ import API
 
 export default function SignupPage() {
-  const [name, setName] = useState("");
+  const [fullName, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+
 
   const handleSubmit = async (e) => {
   e.preventDefault();
@@ -18,7 +18,7 @@ export default function SignupPage() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        fullName: name,
+        fullName: fullName,
         email: email,
         password: password,
       }),
@@ -45,7 +45,7 @@ export default function SignupPage() {
             <input
               type="text"
               required
-              value={name}
+              value={fullName}
               onChange={(e) => setName(e.target.value)}
               className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700"
             />
@@ -73,16 +73,6 @@ export default function SignupPage() {
             />
           </div>
 
-          <div>
-            <label className="block mb-1 font-semibold">Confirm Password</label>
-            <input
-              type="password"
-              required
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700"
-            />
-          </div>
 
           <button className="w-full bg-[#EBD6FB] text-black py-2 rounded-full font-semibold">
             Sign Up
