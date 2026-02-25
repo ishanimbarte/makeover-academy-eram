@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { loginUser } from "../api/api"; // ✅ import API
+import { loginUser } from "../api/api";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -11,23 +11,22 @@ export default function LoginPage() {
     e.preventDefault();
 
     try {
-      const res = await loginUser({
-        email: email,
-        password: password,
+      const response = await loginUser({
+        email,
+        password,
       });
 
-      console.log(res.data);
+      console.log("API Response:", response.data);
 
-      // Save token
-      localStorage.setItem("token", res.data.token);
+      // Save JWT token
+      localStorage.setItem("token", response.data.token);
 
       alert("Login Successful ✅");
 
-      // Redirect to home/dashboard
-      navigate("/");
+      navigate("/"); // redirect
 
     } catch (error) {
-      console.error(error.response?.data || error.message);
+      console.error("Login Error:", error.response?.data || error.message);
       alert("Invalid email or password ❌");
     }
   };
