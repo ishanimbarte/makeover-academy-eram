@@ -1,36 +1,32 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-//import { signupUser } from "../api/api"; // ✅ import API
+import { signupUser } from "../api/api"; // ✅ import API
 
 export default function SignupPage() {
   const [fullName, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const response = await fetch("https://eramclasses-backend-production.up.railway.app/auth/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        fullName: fullName,
-        email: email,
-        password: password,
-      }),
-    });
+    try {
+      const response = await signupUser({
+        fullName,
+        email,
+        password,
+      });
 
-    const data = await response.json();
-    console.log(data);
-
-  } catch (err) {
-    console.error(err);
-  }
-};
+      console.log("Signup successful:", response.data);
+      // Navigate to login page
+      navigate("/login");
+    } catch (err) {
+      console.error("Signup error:", err);
+      alert("Signup failed. Please try again.");
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black">

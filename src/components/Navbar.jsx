@@ -1,26 +1,67 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { User } from "lucide-react";
+import Cookies from "js-cookie";
+import { getUserProfile } from "../api/api";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showUserCard, setShowUserCard] = useState(false);
+  const [userData, setUserData] = useState(null);
 
   const navigate = useNavigate();
 
+  // Scroll effect
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Get selected courses from localStorage
+  // Close profile dropdown on outside click
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("cart")) || [];
-    setCartItems(data);
+    const handleClickOutside = (event) => {
+      if (profileOpen && !event.target.closest('.profile-dropdown')) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [profileOpen]);
+
+  // Check login status
+  useEffect(() => {
+    const token = Cookies.get("token");
+    setIsLoggedIn(!!token);
   }, []);
+
+  // Handle showing user card
+  const handleShowUserCard = () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+      setUserData(user);
+      setShowUserCard(true);
+      setProfileOpen(false);
+    } else {
+      alert("User data not found. Please log in again.");
+    }
+  };
+
+  // Logout function
+  const handleLogout = () => {
+    const confirmLogout = window.confirm("Are you sure you want to logout?");
+    if (confirmLogout) {
+      Cookies.remove("token"); // remove login cookie
+      localStorage.removeItem("cart"); // optional
+      localStorage.removeItem("user"); // remove user data
+      setIsLoggedIn(false);
+      navigate("/login");
+    }
+  };
 
   const menuItems = [
     { name: "Makeup Courses", path: "/courses" },
@@ -37,7 +78,7 @@ export default function Navbar() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
-
+        
         {/* Logo */}
         <Link
           to="/"
@@ -46,7 +87,7 @@ export default function Navbar() {
           Eram Academy
         </Link>
 
-        {/* Menu */}
+        {/* Desktop Menu */}
         <ul className="hidden md:flex items-center gap-8 font-medium text-gray-300">
           {menuItems.map((item) => (
             <NavLink
@@ -65,15 +106,15 @@ export default function Navbar() {
 
         {/* Right Section */}
         <div className="hidden md:flex items-center gap-4">
-
-          {/* Enroll Button */}
+          
+          {/* Contact Button */}
           <Link to="/contact">
             <button className="bg-[#EBD6FB] text-black px-6 py-2 rounded-full font-semibold hover:bg-[#e0c3f7] transition">
               Contact Us
             </button>
           </Link>
 
-          {/* Profile Icon */}
+          {/* Profile */}
           <div className="relative">
             <div
               className="cursor-pointer relative"
@@ -81,7 +122,7 @@ export default function Navbar() {
             >
               <User className="text-[#EBD6FB]" size={26} />
 
-              {/* Badge Count */}
+              {/* Cart Badge */}
               {cartItems.length > 0 && (
                 <span className="absolute -top-2 -right-2 bg-[#EBD6FB] text-black text-xs px-1.5 rounded-full">
                   {cartItems.length}
@@ -91,17 +132,23 @@ export default function Navbar() {
 
             {/* Dropdown */}
             {profileOpen && (
-              <div className="absolute text-white right-0 mt-3 w-48 bg-black border border-gray-700 rounded-lg shadow-lg p-2">
-
+              <div className="absolute text-white right-0 mt-3 w-48 bg-black border border-gray-700 rounded-lg shadow-lg p-2 profile-dropdown">
+                
                 <button
-                  onClick={() => navigate("/login")}
+                  onClick={isLoggedIn ? handleShowUserCard : () => {
+                    navigate("/login");
+                    setProfileOpen(false);
+                  }}
                   className="block w-full text-left px-4 py-2 hover:bg-gray-800 rounded"
                 >
-                  Login Info
+                  {isLoggedIn ? "Login Info" : "Login/Signup"}
                 </button>
 
                 <button
-                  onClick={() => navigate("/cart")}
+                  onClick={() => {
+                    navigate("/cart");
+                    setProfileOpen(false);
+                  }}
                   className="block w-full text-left px-4 py-2 hover:bg-gray-800 rounded"
                 >
                   Selected Courses ({cartItems.length})
@@ -109,8 +156,8 @@ export default function Navbar() {
 
                 <button
                   onClick={() => {
-                    localStorage.removeItem("user");
-                    navigate("/");
+                    handleLogout();
+                    setProfileOpen(false);
                   }}
                   className="block w-full text-left px-4 py-2 hover:bg-gray-800 rounded text-red-400"
                 >
@@ -121,7 +168,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Hamburger */}
+        {/* Mobile Menu Button */}
         <button
           className="md:hidden flex flex-col gap-1"
           onClick={() => setIsOpen(!isOpen)}
@@ -131,6 +178,26 @@ export default function Navbar() {
           <span className="w-6 h-0.5 bg-[#EBD6FB]"></span>
         </button>
       </div>
+
+      {/* User Info Card Modal */}
+      {showUserCard && userData && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
+            <h2 className="text-2xl font-bold text-center mb-4 text-black">Login Details</h2>
+            <div className="space-y-2 text-black">
+              <p><strong>Name:</strong> {userData.fullName || userData.name}</p>
+              <p><strong>Email:</strong> {userData.email}</p>
+              {/* Add more fields if available */}
+            </div>
+            <button
+              onClick={() => setShowUserCard(false)}
+              className="mt-4 w-full bg-[#EBD6FB] text-black py-2 rounded-full font-semibold hover:bg-[#e0c3f7]"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

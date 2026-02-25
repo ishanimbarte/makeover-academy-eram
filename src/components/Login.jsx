@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import Cookies from "js-cookie";
 import { loginUser } from "../api/api";
 
 export default function LoginPage() {
@@ -18,8 +19,13 @@ export default function LoginPage() {
 
       console.log("API Response:", response.data);
 
-      // Save JWT token
-      localStorage.setItem("token", response.data.token);
+      // ✅ Save JWT token in cookie
+      if (response.data.token) {
+        Cookies.set("token", response.data.token, { expires: 7 });
+      }
+
+      // Save user data in localStorage (assuming response.data has user fields)
+      localStorage.setItem("user", JSON.stringify(response.data));
 
       alert("Login Successful ✅");
 
