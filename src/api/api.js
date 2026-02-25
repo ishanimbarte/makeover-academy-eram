@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: "https://eramclasses-backend-production.up.railway.app",
 });
 
 // Attach JWT token automatically
