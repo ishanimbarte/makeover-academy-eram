@@ -69,7 +69,7 @@ export default function Navbar() {
           {/* Enroll Button */}
           <Link to="/contact">
             <button className="bg-[#EBD6FB] text-black px-6 py-2 rounded-full font-semibold hover:bg-[#e0c3f7] transition">
-              Enroll Now
+              Contact Us
             </button>
           </Link>
 
