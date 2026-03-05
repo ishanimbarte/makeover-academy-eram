@@ -21,7 +21,7 @@ export default function Contact() {
     e.preventDefault();
 
     try {
-      const response = await fetch("https://eramclasses-backend-production.up.railway.app/contact", {
+      const response = await fetch("https://eram-makeoverbackend-production.up.railway.app/contact", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",

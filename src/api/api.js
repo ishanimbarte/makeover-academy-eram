@@ -2,12 +2,13 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const API = axios.create({
-  baseURL: "https://eramclasses-backend-production.up.railway.app",
+  baseURL: "https://eram-makeoverbackend-production.up.railway.app",
   withCredentials: true,
 });
 
 // Attach JWT token automatically
 API.interceptors.request.use((req) => {
+  // Try to get token from localStorage first, then fall back to cookies
   const token = Cookies.get("token");
 
   if (token) {
@@ -44,5 +45,19 @@ export const sendContactMessage = (data) => API.post("/contact", data);
 
 // ✅ Free Demo API
 export const registerDemo = (data) => API.post("/demo/register", data);
+
+// ================= COURSES =================
+
+export const getAllCourses = () => API.get("/courses");
+
+// ================= PROFILE =================
+
+export const createOrUpdateProfile = (data) =>
+  API.post("/api/profiles", data);
+
+// ================= IMAGE UPLOAD =================
+
+export const uploadImage = (formData) =>
+  API.post("/api/images/upload", formData);
 
 export default API;

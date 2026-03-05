@@ -1,35 +1,82 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { createOrUpdateProfile, uploadImage } from "../api/api";
 
 export default function CourseForm() {
-  const [profileImage, setProfileImage] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
-  const [courses, setCourses] = useState([]);
   const coursesFromState = location.state?.courses;
 
-  const handleImageUpload = (e) => {
-  const file = e.target.files[0];
+  const [courses, setCourses] = useState([]);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
 
-  if (file) {
-    const reader = new FileReader();
+  const token = localStorage.getItem("token");
 
-    reader.onloadend = () => {
-      setProfileImage(reader.result);
-
-      // Save to localStorage
-      localStorage.setItem("profileImage", reader.result);
-    };
-
-    reader.readAsDataURL(file);
-  }
-};
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    phoneNumber: "",
+    dateOfBirth: "",
+    gender: "",
+    city: "",
+    state: "",
+    pinCode: "",
+    courseName: "",
+    batchTiming: "",
+    priorExperience: "",
+    experienceDescription: "",
+    skillLevel: "",
+    whyJoin: "",
+    careerGoal: "",
+    message: ""
+  });
 
   useEffect(() => {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
     setCourses(coursesFromState || cart);
   }, [coursesFromState]);
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  // ✅ Upload image to backend
+  const handleImageUpload = async () => {
+  if (!selectedFile) {
+    alert("Please select an image first");
+    return;
+  }
+
+  try {
+    setUploading(true);
+
+    const formDataImage = new FormData();
+    formDataImage.append("file", selectedFile);
+
+    const res = await uploadImage(formDataImage);
+
+    const imageUrl = res.data.imageUrl || res.data.url;
+
+    setUploadedImageUrl(imageUrl);
+
+    setFormData((prev) => ({
+      ...prev,
+      imageUrl: imageUrl
+    }));
+
+    alert("Image uploaded successfully!");
+  } catch (error) {
+    console.error(error);
+    alert("Image upload failed");
+  } finally {
+    setUploading(false);
+  }
+};
 
   const course = courses[0];
 
@@ -41,18 +88,28 @@ export default function CourseForm() {
     );
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(`Enrollment submitted for ${courses.map(c => c.title).join(', ')}`);
-    localStorage.removeItem("cart"); // Clear cart after enrollment
-    navigate("/"); // Redirect to home or success page
+
+    try {
+      await createOrUpdateProfile({
+        ...formData,
+        courseName: courses.map((c) => c.title).join(", ")
+      });
+
+      alert("Enrollment submitted successfully!");
+      localStorage.removeItem("cart");
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to submit enrollment");
+    }
   };
 
   return (
     <div className="bg-black min-h-screen flex justify-center items-center px-4 py-20">
       <div className="bg-[#111] rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto p-5 md:p-6 relative shadow-lg">
 
-        {/* Close Button */}
         <button
           onClick={() => navigate(-1)}
           className="absolute top-4 right-4 text-gray-300 hover:text-white text-xl font-bold"
@@ -62,9 +119,6 @@ export default function CourseForm() {
 
         <div className="grid md:grid-cols-2 gap-8 mt-6">
 
-          {/* LEFT SIDE — ENROLL FORM */}
-
-          
           <div>
             <h2 className="text-2xl font-bold text-[#EBD6FB] mb-4">
               Enroll in Selected Courses
@@ -73,64 +127,77 @@ export default function CourseForm() {
             <form onSubmit={handleSubmit} className="space-y-4">
 
               {/* Profile Photo Upload */}
-<div className="flex flex-col items-center mb-4">
-  <label className="cursor-pointer">
-    <div className="w-24 h-24 rounded-full bg-[#1a1a1a] border border-gray-600 flex items-center justify-center overflow-hidden">
-      {profileImage ? (
-        <img
-          src={profileImage}
-          alt="Profile"
-          className="w-full h-full object-cover"
-        />
-      ) : (
-        <span className="text-gray-400 text-sm">Upload</span>
-      )}
-    </div>
+              <div className="flex flex-col items-center mb-4">
+                <div className="w-24 h-24 rounded-full bg-[#1a1a1a] border border-gray-600 flex items-center justify-center overflow-hidden">
+                  {uploadedImageUrl ? (
+                    <img
+                      src={uploadedImageUrl}
+                      alt="Profile"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-gray-400 text-sm">Upload</span>
+                  )}
+                </div>
 
-    <input
-      type="file"
-      accept="image/*"
-      onChange={handleImageUpload}
-      className="hidden"
-    />
-  </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setSelectedFile(e.target.files[0])}
+                  className="mt-3 text-sm text-white"
+                />
 
-  <p className="text-gray-400 text-xs mt-2">
-    Upload Profile Photo
-  </p>
-</div>
+                <button
+                  type="button"
+                  onClick={handleImageUpload}
+                  disabled={!selectedFile || uploading}
+                  className="mt-2 bg-[#EBD6FB] text-black px-4 py-2 rounded-lg text-sm"
+                >
+                  {uploading ? "Uploading..." : "Upload Image"}
+                </button>
+              </div>
 
-              {/* Basic Info */}
+              {/* Inputs (UNCHANGED STYLING) */}
+
               <input
                 type="text"
-                placeholder="Full Name"
+                name="fullName"
+                onChange={handleChange}
                 required
+                placeholder="Full Name"
                 className="w-full p-3 rounded-lg bg-[#1a1a1a] text-white border border-gray-700 focus:outline-none focus:border-[#EBD6FB]"
               />
 
               <input
                 type="email"
-                placeholder="Email Address"
+                name="email"
+                onChange={handleChange}
                 required
+                placeholder="Email Address"
                 className="w-full p-3 rounded-lg bg-[#1a1a1a] text-white border border-gray-700 focus:outline-none focus:border-[#EBD6FB]"
               />
 
               <input
                 type="tel"
-                placeholder="Phone Number"
+                name="phoneNumber"
+                onChange={handleChange}
                 required
+                placeholder="Phone Number"
                 className="w-full p-3 rounded-lg bg-[#1a1a1a] text-white border border-gray-700 focus:outline-none focus:border-[#EBD6FB]"
               />
-
-              {/* NEW FIELDS */}
 
               <input
                 type="date"
-                placeholder="Date of Birth"
+                name="dateOfBirth"
+                onChange={handleChange}
                 className="w-full p-3 rounded-lg bg-[#1a1a1a] text-white border border-gray-700 focus:outline-none focus:border-[#EBD6FB]"
               />
 
-              <select className="w-full p-3 rounded-lg bg-[#1a1a1a] text-white border border-gray-700 focus:outline-none focus:border-[#EBD6FB]">
+              <select
+                name="gender"
+                onChange={handleChange}
+                className="w-full p-3 rounded-lg bg-[#1a1a1a] text-white border border-gray-700 focus:outline-none focus:border-[#EBD6FB]"
+              >
                 <option value="">Select Gender</option>
                 <option>Female</option>
                 <option>Male</option>
@@ -139,23 +206,33 @@ export default function CourseForm() {
 
               <input
                 type="text"
+                name="city"
+                onChange={handleChange}
                 placeholder="City"
                 className="w-full p-3 rounded-lg bg-[#1a1a1a] text-white border border-gray-700 focus:outline-none focus:border-[#EBD6FB]"
               />
 
               <input
                 type="text"
+                name="state"
+                onChange={handleChange}
                 placeholder="State"
                 className="w-full p-3 rounded-lg bg-[#1a1a1a] text-white border border-gray-700 focus:outline-none focus:border-[#EBD6FB]"
               />
 
               <input
                 type="text"
+                name="pinCode"
+                onChange={handleChange}
                 placeholder="PIN Code"
                 className="w-full p-3 rounded-lg bg-[#1a1a1a] text-white border border-gray-700 focus:outline-none focus:border-[#EBD6FB]"
               />
 
-              <select className="w-full p-3 rounded-lg bg-[#1a1a1a] text-white border border-gray-700 focus:outline-none focus:border-[#EBD6FB]">
+              <select
+                name="batchTiming"
+                onChange={handleChange}
+                className="w-full p-3 rounded-lg bg-[#1a1a1a] text-white border border-gray-700 focus:outline-none focus:border-[#EBD6FB]"
+              >
                 <option value="">Batch Timing</option>
                 <option>Morning</option>
                 <option>Afternoon</option>
@@ -163,25 +240,29 @@ export default function CourseForm() {
                 <option>Weekend</option>
               </select>
 
-              {/* <input
-                type="date"
-                placeholder="Preferred Start Date"
+              <select
+                name="priorExperience"
+                onChange={handleChange}
                 className="w-full p-3 rounded-lg bg-[#1a1a1a] text-white border border-gray-700 focus:outline-none focus:border-[#EBD6FB]"
-              /> */}
-
-              <select className="w-full p-3 rounded-lg bg-[#1a1a1a] text-white border border-gray-700 focus:outline-none focus:border-[#EBD6FB]">
+              >
                 <option value="">Prior Makeup Experience?</option>
                 <option>Yes</option>
                 <option>No</option>
               </select>
 
               <textarea
-                placeholder="If Yes, describe your experience"
+                name="experienceDescription"
+                onChange={handleChange}
                 rows="2"
+                placeholder="If Yes, describe your experience"
                 className="w-full p-3 rounded-lg bg-[#1a1a1a] text-white border border-gray-700 focus:outline-none focus:border-[#EBD6FB]"
-              ></textarea>
+              />
 
-              <select className="w-full p-3 rounded-lg bg-[#1a1a1a] text-white border border-gray-700 focus:outline-none focus:border-[#EBD6FB]">
+              <select
+                name="skillLevel"
+                onChange={handleChange}
+                className="w-full p-3 rounded-lg bg-[#1a1a1a] text-white border border-gray-700 focus:outline-none focus:border-[#EBD6FB]"
+              >
                 <option value="">Skill Level</option>
                 <option>Beginner</option>
                 <option>Intermediate</option>
@@ -189,12 +270,18 @@ export default function CourseForm() {
               </select>
 
               <textarea
-                placeholder="Why do you want to join this course?"
+                name="whyJoin"
+                onChange={handleChange}
                 rows="3"
+                placeholder="Why do you want to join this course?"
                 className="w-full p-3 rounded-lg bg-[#1a1a1a] text-white border border-gray-700 focus:outline-none focus:border-[#EBD6FB]"
-              ></textarea>
+              />
 
-              <select className="w-full p-3 rounded-lg bg-[#1a1a1a] text-white border border-gray-700 focus:outline-none focus:border-[#EBD6FB]">
+              <select
+                name="careerGoal"
+                onChange={handleChange}
+                className="w-full p-3 rounded-lg bg-[#1a1a1a] text-white border border-gray-700 focus:outline-none focus:border-[#EBD6FB]"
+              >
                 <option value="">Career Goal After Course</option>
                 <option>Freelance Artist</option>
                 <option>Salon Job</option>
@@ -202,12 +289,13 @@ export default function CourseForm() {
                 <option>Personal Learning</option>
               </select>
 
-              {/* Existing Message */}
               <textarea
-                placeholder="Any Message (Optional)"
+                name="message"
+                onChange={handleChange}
                 rows="3"
+                placeholder="Any Message (Optional)"
                 className="w-full p-3 rounded-lg bg-[#1a1a1a] text-white border border-gray-700 focus:outline-none focus:border-[#EBD6FB]"
-              ></textarea>
+              />
 
               <button
                 type="submit"
@@ -215,29 +303,8 @@ export default function CourseForm() {
               >
                 Confirm Enrollment
               </button>
-            </form>
-          </div>
 
-          {/* RIGHT SIDE — COURSE DETAILS */}
-          <div>
-            <h3 className="text-xl font-bold text-[#EBD6FB] mb-2">
-              Selected Courses
-            </h3>
-            {courses.map((c, index) => (
-              <div key={index} className="mb-4 border-b border-gray-700 pb-4">
-                <img
-                  src={c.image}
-                  alt={c.title}
-                  className="w-full h-32 object-cover rounded-lg mb-2"
-                />
-                <h4 className="text-lg font-semibold text-[#EBD6FB]">{c.title}</h4>
-                <div className="text-sm text-[#eee2f7] space-y-1">
-                  <p>Duration: {c.duration}</p>
-                  <p>Level: {c.level}</p>
-                  <p>Price: {c.price}</p>
-                </div>
-              </div>
-            ))}
+            </form>
           </div>
 
         </div>
